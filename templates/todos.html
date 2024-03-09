@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block page_title %} Todo list {% endblock %}
+
+{% block content %}
+  <form class="col-lg-6" action="/todo/add_task/" method="get">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Add your task here" name="todo">
+      <button class="btn btn-primary" type="submit" id="button-addon2">Add task</button>
+    </div>
+  </form>
+  <ul class="col-lg-6 list-group list-group-flush">
+    {% if todos %}
+      {% for todo in todos %}
+        <form action="/todo/remove_task/" method="get">
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            {{ todo[1] }}
+            <input type="hidden" name="index" value="{{ todo[0] }}">
+            <button class="btn btn-danger" type="submit">remove</button>
+          </li>
+        </form>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+        No tasks
+      </li>
+    {% endif %}
+  </ul>
+{% endblock %}

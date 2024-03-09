@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My Site :: {% block title %} No content {% endblock %}</title>
+  <link rel="stylesheet" href={{ url_for('static', path='css/bootstrap.min.css') }}>
+  <link rel="stylesheet" href={{ url_for('static', path='css/style.css') }}>
+</head>
+<body>
+<div class="container">
+  {% include 'includes/_header.html' %}
+  <h1 class="page-heading">
+    {% block page_title %}{{ page_title }}{% endblock %}
+  </h1>
+  <main class="main-content">
+    {% block content %}
+
+    {% endblock %}
+    <script src={{ url_for('static', path='js/bootstrap.min.js') }}></script>
+    <script src={{ url_for('static', path='js/index.js') }}></script>
+  </main>
+</div>
+</body>
+</html>
