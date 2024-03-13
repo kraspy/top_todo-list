@@ -1,60 +1,16 @@
-import sqlite3
-from pathlib import Path
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-
-DATABASE = Path(Path(__file__).parent / 'db' / 'db.sqlite').resolve()
-
-
-def create_connection(db_file):
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-    except sqlite3.Error as e:
-        print(e)
-
-    return conn
+from models import get_tasks_from_db, add_task_to_db, remove_task_from_db
 
 
-def get_tasks_from_db(conn):
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM todos")
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
-
-def add_task_to_db(conn, task):
-    sql = '''INSERT INTO todos(text) VALUES(?) '''
-    cur = conn.cursor()
-    cur.execute(sql, task)
-    conn.commit()
-    return cur.lastrowid
-
-
-def remove_task_from_db(conn, task_id):
-    sql = '''DELETE FROM todos WHERE id = ?'''
-    cur = conn.cursor()
-    cur.execute(sql, (task_id,))
-    conn.commit()
-
-
+# FastAPI App (Main)
 app = FastAPI()
 templates = Jinja2Templates('templates')
 app.mount('/static', StaticFiles(directory='static'), name='static')
-
-todo_list = [
-    'default task'
-]
-
-
-class Task(BaseModel):
-    text: str
 
 
 @app.get('/')
@@ -75,10 +31,13 @@ def index(req: Request):
     return templates.TemplateResponse(req, 'index.html', context)
 
 
+class Todo(BaseModel):
+    text: str
+
+
 @app.get('/todo/')
 def page_todo(req: Request):
-    conn = create_connection(DATABASE)
-    todo_list = get_tasks_from_db(conn)
+    todo_list = get_tasks_from_db()
     context = {
         'page_title': 'Todos',
         'todos': todo_list
@@ -87,24 +46,20 @@ def page_todo(req: Request):
     return templates.TemplateResponse(req, 'todos.html', context)
 
 
-@app.get('/todo/add_task/')
-def add_task(todo: str):
-    conn = create_connection(DATABASE)
-    add_task_to_db(conn, (todo,))
-    conn.close()
-    return RedirectResponse('/todo/')
+@app.post('/todo/add_task/')
+def add_task(todo: str = Form(...)):
+    add_task_to_db(todo)
+    return RedirectResponse('/todo/', status_code=303)
 
 
-@app.get('/todo/remove_task/')
-def remove_task(index: int):
-    conn = create_connection(DATABASE)
-    remove_task_from_db(conn, index)
-    conn.close()
-    return RedirectResponse('/todo/')
+@app.post('/todo/remove_task/')
+def remove_task(index: str = Form(...)):
+    remove_task_from_db(index)
+    return RedirectResponse('/todo/', status_code=303)
 
 
 @app.get('/about/')
-def page_todo(req: Request):
+def page_about(req: Request):
     context = {
         'user': {
             'name': 'Evgeniy',
