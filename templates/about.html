@@ -5,13 +5,13 @@
 
 {% block content %}
   <p>
-    Hi! My name is {{ user['name'] }}. I'm a beginner {{ user['code_lang'] }} programmer. I love to create useful and interesting
+    Hi! My name is {{ info['name'] }}. I'm a beginner {{ info['code_lang'] }} programmer. I love to create useful and interesting
     applications.
   </p>
 
   <h2>My skills:</h2>
   <ul>
-    {% for name, skill in user.skills.items() %}
+    {% for name, skill in info.skills.items() %}
     <li>{{ name }}:
     {% for item in skill %}
       <ul>
@@ -30,7 +30,7 @@
 
   <h2>My Contacts</h2>
   <ul>
-    <li>Email:<a href="mailto:{{ user['email'] }}">{{ user['email'] }}</a></li>
-    <li>GitHub: <a href={{ user['github'] }}>{{ user['github'] }}</a></li>
+    <li>Email:<a href="mailto:{{ info['email'] }}">{{ info['email'] }}</a></li>
+    <li>GitHub: <a href={{ info['github'] }}>{{ info['github'] }}</a></li>
   </ul>
 {% endblock %}

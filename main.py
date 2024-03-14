@@ -1,14 +1,17 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
+from rich import inspect, print
 
-from models import get_tasks_from_db, add_task_to_db, remove_task_from_db
+from models import get_tasks_from_db, add_task_to_db, remove_task_from_db, User
+from users.dependencies import get_current_user
+from users.router import router as users_router
 
-
-# FastAPI App (Main)
 app = FastAPI()
+
+app.include_router(users_router)
+
 templates = Jinja2Templates('templates')
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
@@ -25,22 +28,19 @@ def index(req: Request):
                 'list': [1, 2, 3],
                 'dict': {'a': 1, 'b': 2}
             }
-        }
+        },
     }
 
     return templates.TemplateResponse(req, 'index.html', context)
 
 
-class Todo(BaseModel):
-    text: str
-
-
 @app.get('/todo/')
-def page_todo(req: Request):
+def page_todo(req: Request, user: User = Depends(get_current_user)):
     todo_list = get_tasks_from_db()
     context = {
         'page_title': 'Todos',
-        'todos': todo_list
+        'todos': todo_list,
+        'user': user,
     }
 
     return templates.TemplateResponse(req, 'todos.html', context)
@@ -61,7 +61,7 @@ def remove_task(index: str = Form(...)):
 @app.get('/about/')
 def page_about(req: Request):
     context = {
-        'user': {
+        'info': {
             'name': 'Evgeniy',
             'code_lang': 'Python',
             'email': 'kraspy@yandex.ru',
@@ -82,8 +82,9 @@ def page_about(req: Request):
                     'Django',
                 ],
             },
-
         },
     }
     print(context)
     return templates.TemplateResponse(req, 'about.html', context)
+
+

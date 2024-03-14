@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}Home Page{% endblock %}
-{# Portfolio page for IT-learning Person#}
-
 {% block page_title %}This is my Home page{% endblock %}
 
 {% block content %}
   {% for py_type, example in content.py_types.items() %}
-  <dl>
-    <dd>{{ py_type }}</dd>
-    <dt>{{ example }}</dt>
-  </dl>
+    <dl>
+      <dd>{{ py_type }}</dd>
+      <dt>{{ example }}</dt>
+    </dl>
   {% endfor %}
-	
+
 {% endblock %}

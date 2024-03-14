@@ -12,9 +12,24 @@ class Base(DeclarativeBase):
     pass
 
 
+class User(Base):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    login: Mapped[str] = mapped_column(String(100))
+    hashed_password: Mapped[str] = mapped_column(String(100))
+    role: Mapped[str] = mapped_column(String(10))
+
+    def __str__(self):
+        return f'{self.id} - {self.login}'
+
+    def __repr__(self):
+        return f'User(id={self.id}, username="{self.login}")'
+
+
 class Todo(Base):
-    __tablename__ = "todos"
-    
+    __tablename__ = 'todos'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(String(100))
     done: Mapped[bool] = mapped_column(default=False)
@@ -54,4 +69,23 @@ def remove_task_from_db(todo_id):
     with Session(engine) as session:
         task = session.get(Todo, todo_id)
         session.delete(task)
+        session.commit()
+
+
+# USERS FUNCTIONS
+def get_user_or_none(login):
+    with Session(engine) as session:
+        user = session.scalars(
+            select(User).where(User.login == login)).first()
+        return user
+
+
+def add_user_to_db(login, hashed_password, role):
+    with Session(engine) as session:
+        user = User(
+            login=login,
+            hashed_password=hashed_password,
+            role=role
+        )
+        session.add(user)
         session.commit()
