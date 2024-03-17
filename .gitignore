@@ -157,5 +157,4 @@ cython_debug/
 
 .DS_Store
 
-db/*
-!db/
+db/*.db
