@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Request, Form, Depends
+from fastapi import FastAPI, Request, Form, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
-from rich import inspect, print
+from fastapi.responses import RedirectResponse, HTMLResponse
 
 from models import get_tasks_from_db, add_task_to_db, remove_task_from_db, User
-from users.dependencies import get_current_user
+from users.dependencies import get_current_user, get_token
 from users.router import router as users_router
 
 app = FastAPI()
@@ -18,6 +17,10 @@ app.mount('/static', StaticFiles(directory='static'), name='static')
 
 @app.get('/')
 def index(req: Request):
+    try:
+        user = get_current_user(token=get_token(req))
+    except HTTPException:
+        user = None
     context = {
         'page_title': 'Home',
         'content': {
@@ -29,13 +32,19 @@ def index(req: Request):
                 'dict': {'a': 1, 'b': 2}
             }
         },
+        'user': user
     }
 
     return templates.TemplateResponse(req, 'index.html', context)
 
 
 @app.get('/todo/')
-def page_todo(req: Request, user: User = Depends(get_current_user)):
+def page_todo(req: Request):
+    try:
+        user = get_current_user(token=get_token(req))
+    except HTTPException:
+        user = None
+
     todo_list = get_tasks_from_db()
     context = {
         'page_title': 'Todos',
@@ -60,6 +69,10 @@ def remove_task(index: str = Form(...)):
 
 @app.get('/about/')
 def page_about(req: Request):
+    try:
+        user = get_current_user(token=get_token(req))
+    except HTTPException:
+        user = None
     context = {
         'info': {
             'name': 'Evgeniy',
@@ -83,8 +96,7 @@ def page_about(req: Request):
                 ],
             },
         },
+        'user': user
     }
     print(context)
     return templates.TemplateResponse(req, 'about.html', context)
-
-

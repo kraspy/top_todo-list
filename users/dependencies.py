@@ -20,6 +20,6 @@ def get_current_user(token: str = Depends(get_token)):
     user_login = payload.get('sub')
 
     if not user_login:
-        raise HTTPException(status_code=401, detail='Not authenticated')
+        return None
 
     return user_login
