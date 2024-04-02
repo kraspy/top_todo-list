@@ -18,7 +18,12 @@
           <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
             {{ todo.text }}
             <input type="hidden" name="index" value="{{ todo.id }}">
-            <button class="btn btn-danger" type="submit">remove</button>
+            <div>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal" onclick="setModalValues('{{ todo.id }}', '{{ todo.text }}')">
+                edit
+              </button>
+              <button class="btn btn-danger" type="submit">remove</button>
+            </div>
           </li>
         </form>
       {% endfor %}
@@ -28,4 +33,6 @@
       </li>
     {% endif %}
   </ul>
+  {# html modal edit forn on bootstrap5#}
+  {% include 'includes/_edit_modal.html' %}
 {% endblock %}

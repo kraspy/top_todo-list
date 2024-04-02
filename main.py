@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, HTMLResponse
 
-from models import get_tasks_from_db, add_task_to_db, remove_task_from_db, User
+from models import get_tasks_from_db, add_task_to_db, remove_task_from_db, update_task_in_db
 from users.dependencies import get_current_user, get_token
 from users.router import router as users_router
 
@@ -58,6 +58,12 @@ def page_todo(req: Request):
 @app.post('/todo/add_task/')
 def add_task(todo: str = Form(...)):
     add_task_to_db(todo)
+    return RedirectResponse('/todo/', status_code=303)
+
+
+@app.post('/todo/update_task/')
+def update_task(index: str = Form(...), text: str = Form(...)):
+    update_task_in_db(index, text)
     return RedirectResponse('/todo/', status_code=303)
 
 

@@ -1,0 +1,20 @@
+<div class="modal" tabindex="-1" id="editTaskModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-task-form" action="/todo/update_task/" method="POST">
+          <input type="hidden" class="task-id-input" name="index">
+          <input type="text" class="task-text-input form-control" name="text">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" class="task-id-input form-control" name="id">
+        <button type="submit" class="btn btn-primary" form="edit-task-form">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

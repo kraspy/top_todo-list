@@ -61,6 +61,13 @@ def add_task_to_db(task):
         session.commit()
 
 
+def update_task_in_db(todo_id, text):
+    with Session(engine) as session:
+        task = session.get(Todo, int(todo_id))
+        task.text = text
+        session.commit()
+
+
 def remove_task_from_db(todo_id):
     try:
         todo_id = int(todo_id)
